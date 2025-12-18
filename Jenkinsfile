@@ -15,7 +15,7 @@ pipeline {
         sh 'node -v'
         sh 'npm -v'
         sh 'npm ci'
-        sh 'npx playwright install'
+        sh 'npx playwright install chromium'
       }
     }
 
@@ -27,25 +27,26 @@ pipeline {
   }
 
   post {
-    always {
-      echo '📦 Archiving reports'
-      archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
-      archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
-    }
+  always {
+    echo '📦 Archiving reports'
 
-    success {
-      echo '🎉 Tests passed!'
-      publishHTML(target: [
-        reportDir: 'playwright-report',
-        reportFiles: 'index.html',
-        reportName: 'Playwright HTML Report',
-        alwaysLinkToLastBuild: true,
-        keepAll: true
-      ])
-    }
+    archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
+    archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
 
-    failure {
-      echo '❌ Tests failed. Check logs and report.'
-    }
+    publishHTML(target: [
+      reportDir: 'playwright-report',
+      reportFiles: 'index.html',
+      reportName: 'Playwright HTML Report',
+      alwaysLinkToLastBuild: true,
+      keepAll: true
+    ])
+  }
+
+  success {
+    echo '🎉 Tests passed!'
+  }
+
+  failure {
+    echo '❌ Tests failed. Check logs and report.'
   }
 }
