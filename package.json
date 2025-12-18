@@ -6,7 +6,7 @@
     "test": "npx playwright test",
     "test:debug": "npx playwright test --debug",
     "test:ui": "npx playwright test --ui",
-    "test:chromium": "npx playwright test --project=chromium --reporter=html",
+    "test:chromium": "npx playwright test --project=chromium --reporter=html --grep @regression",
     "test:chromium-report": "npx playwright test --project=chromium --reporter=html && npx playwright show-report",
     "test:firefox": "npx playwright test --project=firefox",
     "test:firefox-report": "npx playwright test --project=chromium --reporter=html && npx playwright show-report",

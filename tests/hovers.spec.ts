@@ -5,14 +5,14 @@ test.describe('Hovers Tests', () => {
     await hoversPage.navigateToHovers();
   });
 
-  test('should display figures on hovers page', async ({ hoversPage }) => {
+  test('@regressionshould display figures on hovers page', async ({ hoversPage }) => {
     await test.step('Verify figures are present', async () => {
       const count = await hoversPage.getNumberOfFigures();
       expect(count).toBeGreaterThan(0);
     });
   });
 
-  test('should display caption on hover', async ({ hoversPage }) => {
+  test('@regressionshould display caption on hover', async ({ hoversPage }) => {
     await test.step('Hover over first figure and verify caption', async () => {
       await hoversPage.hoverOverFigure(0);
       const isVisible = await hoversPage.isCaptionVisible();
@@ -20,7 +20,7 @@ test.describe('Hovers Tests', () => {
     });
   });
 
-  test('should display correct caption text on hover', async ({ hoversPage }) => {
+  test('@regression should display correct caption text on hover', async ({ hoversPage }) => {
     await test.step('Hover over figure and get caption text', async () => {
       await hoversPage.hoverOverFigure(1);
       const caption = await hoversPage.getCaptionTextForFigure(1);
@@ -28,7 +28,7 @@ test.describe('Hovers Tests', () => {
     });
   });
 
-  test('should have at least 3 figures', async ({ hoversPage }) => {
+  test('@regression should have at least 3 figures', async ({ hoversPage }) => {
     await test.step('Verify minimum figure count', async () => {
       const count = await hoversPage.getNumberOfFigures();
       expect(count).toBeGreaterThanOrEqual(3);
