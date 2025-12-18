@@ -1,0 +1,28 @@
+{
+  "name": "pw",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:debug": "npx playwright test --debug",
+    "test:ui": "npx playwright test --ui",
+    "test:chromium": "npx playwright test --project=chromium --reporter=html",
+    "test:chromium-report": "npx playwright test --project=chromium --reporter=html && npx playwright show-report",
+    "test:firefox": "npx playwright test --project=firefox",
+    "test:firefox-report": "npx playwright test --project=chromium --reporter=html && npx playwright show-report",
+    "test:webkit": "npx playwright test --project=webkit",
+    "test:webkit-report": "npx playwright test --project=webkit --reporter=html && npx playwright show-report",
+    "test:headed": "npx playwright test --headed",
+    "report": "npx playwright show-report"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^25.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
