@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   tools {
-    nodejs 'node24' // This must match the Node.js tool name in Jenkins
+    nodejs 'node24'
   }
 
   environment {
@@ -12,8 +12,10 @@ pipeline {
   stages {
     stage('Install Dependencies') {
       steps {
+        sh 'node -v'
+        sh 'npm -v'
         sh 'npm ci'
-        sh 'npx playwright install --with-deps'
+        sh 'npx playwright install'
       }
     }
 
@@ -22,16 +24,15 @@ pipeline {
         sh 'npm run test:chromium'
       }
     }
-
-    stage('Archive Reports') {
-      steps {
-        archiveArtifacts artifacts: 'playwright-report/**', fingerprint: true
-        archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
-      }
-    }
   }
 
   post {
+    always {
+      echo '📦 Archiving reports'
+      archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
+      archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
+    }
+
     success {
       echo '🎉 Tests passed!'
       publishHTML(target: [
@@ -42,11 +43,9 @@ pipeline {
         keepAll: true
       ])
     }
+
     failure {
-      echo '❌ Tests failed. Check report.'
-    }
-    always {
-      echo '✅ Build complete.'
+      echo '❌ Tests failed. Check logs and report.'
     }
   }
 }

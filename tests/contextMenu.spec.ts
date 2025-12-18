@@ -5,14 +5,14 @@ test.describe('Context Menu Tests', () => {
     await contextMenuPage.navigateToContextMenu();
   });
 
-  test('should display context menu element', async ({ contextMenuPage }) => {
+  test('@regression should display context menu element', async ({ contextMenuPage }) => {
     await test.step('Verify element is visible', async () => {
       const isVisible = await contextMenuPage.isBoxVisible();
       expect(isVisible).toBeTruthy();
     });
   });
 
-  test('should trigger alert on right click', async ({ contextMenuPage }) => {
+  test('@regressionshould trigger alert on right click', async ({ contextMenuPage }) => {
     await test.step('Right click and handle dialog', async () => {
       const alertPromise = contextMenuPage.rightClickOnBox();
       const alert = await alertPromise;
