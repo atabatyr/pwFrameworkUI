@@ -34,38 +34,32 @@ pipeline {
         sh 'npm run test:chromium'
       }
     }
-
-    stage('Generate Allure Report') {
-      steps {
-        sh 'npm run allure:generate'
-      }
-    }
-
-    stage('Publish Allure Report') {
-      steps {
-        publishHTML(target: [
-          reportDir: 'allure-report',
-          reportFiles: 'index.html',
-          reportName: 'Allure Report',
-          alwaysLinkToLastBuild: true,
-          keepAll: true
-        ])
-      }
-    }
   }
 
   post {
     always {
-      echo '📦 Archiving reports'
+      echo '📊 Generating Allure report (always)'
 
-      // ✅ JUnit results for Jenkins graphs
+      // ✅ Generate Allure even if tests FAILED
+      sh 'npm run allure:generate || true'
+
+      // ✅ Publish Allure inside Jenkins UI
+      publishHTML(target: [
+        reportDir: 'allure-report',
+        reportFiles: 'index.html',
+        reportName: 'Allure Report',
+        alwaysLinkToLastBuild: true,
+        keepAll: true
+      ])
+
+      // ✅ JUnit for Jenkins graphs
       junit 'test-results/**/*.xml'
 
-      // ✅ Keep artifacts for trace/debug
-      archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
-      archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
+      // ✅ Archive everything for debugging
       archiveArtifacts artifacts: 'allure-results/**', allowEmptyArchive: true
       archiveArtifacts artifacts: 'allure-report/**', allowEmptyArchive: true
+      archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
+      archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
     }
 
     success {
@@ -73,7 +67,7 @@ pipeline {
     }
 
     failure {
-      echo '❌ Tests failed. Check logs and report.'
+      echo '❌ Tests failed — Allure report still available'
     }
   }
 }
