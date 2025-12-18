@@ -9,6 +9,13 @@ pipeline {
     NODE_ENV = 'test'
   }
 
+  triggers {
+    // 🟢 Trigger build on every push to 'main'
+    pollSCM('* * * * *') // Polls Git every minute (optional)
+    // OR, for GitHub webhook:
+    // githubPush()
+  }
+
   stages {
     stage('Clean Reports') {
       steps {
@@ -27,14 +34,6 @@ pipeline {
     stage('Run Playwright Tests') {
       steps {
         sh 'npm run test:chromium'
-
-        // 🔍 Add Allure environment metadata
-        sh '''
-          mkdir -p allure-results
-          echo "Browser=Chromium" >> allure-results/environment.properties
-          echo "Playwright Version=1.57.0" >> allure-results/environment.properties
-          echo "Node Version=$(node -v)" >> allure-results/environment.properties
-        '''
       }
     }
 
@@ -47,17 +46,23 @@ pipeline {
 
   post {
     always {
-      echo '📊 Publishing Allure report...'
+      // 🕘 Copy previous Allure history to results (for trend graphs)
+      script {
+        def reportHistory = "${env.WORKSPACE}/allure-report/history"
+        def resultsHistory = "${env.WORKSPACE}/allure-results/history"
+        if (fileExists(reportHistory)) {
+          sh "mkdir -p ${resultsHistory} && cp -R ${reportHistory}/* ${resultsHistory}/"
+        }
+      }
+
+      // 📊 Publish Allure report
       allure([
         reportBuildPolicy: 'ALWAYS',
         results: [[path: 'allure-results']]
       ])
-    }
-    success {
-      echo '✅ Tests passed — Allure report is available.'
-    }
-    failure {
-      echo '❌ Tests failed — Check Allure report for details.'
+
+      // 🗂️ Archive history folder (optional)
+      archiveArtifacts artifacts: 'allure-report/history/**', allowEmptyArchive: true
     }
   }
 }
