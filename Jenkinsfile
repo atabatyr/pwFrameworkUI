@@ -1,6 +1,11 @@
 pipeline {
   agent any
 
+  triggers {
+    cron('30 23 * * *')
+  }
+
+
   tools {
     nodejs 'node24'
   }
