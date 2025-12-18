@@ -50,3 +50,4 @@ pipeline {
     echo '❌ Tests failed. Check logs and report.'
   }
 }
+}
