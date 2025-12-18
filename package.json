@@ -13,7 +13,10 @@
     "test:webkit": "npx playwright test --project=webkit --grep @regression",
     "test:webkit-report": "npx playwright test --project=webkit && npx playwright show-report",
     "test:headed": "npx playwright test --headed",
-    "report": "npx playwright show-report"
+    "report": "npx playwright show-report",
+    "allure:generate": "npx allure-commandline generate allure-results --clean -o allure-report",
+    "allure:open": "npx allure-commandline open allure-report",
+    "clean:reports": "rm -rf allure-results allure-report"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +25,8 @@
   "devDependencies": {
     "@playwright/test": "^1.57.0",
     "@types/node": "^25.0.3",
+    "allure-commandline": "^2.36.0",
+    "allure-playwright": "^3.4.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }
