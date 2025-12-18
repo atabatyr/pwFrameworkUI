@@ -5,7 +5,6 @@ pipeline {
     cron('40 23 * * *')
   }
 
-
   tools {
     nodejs 'node24'
   }
@@ -32,27 +31,31 @@ pipeline {
   }
 
   post {
-  always {
-    echo '📦 Archiving reports'
+    always {
+      echo '📦 Archiving reports'
 
-    archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
-    archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
+      // ✅ JUnit results for Jenkins graphs
+      junit 'test-results/**/*.xml'
 
-    publishHTML(target: [
-      reportDir: 'playwright-report',
-      reportFiles: 'index.html',
-      reportName: 'Playwright HTML Report',
-      alwaysLinkToLastBuild: true,
-      keepAll: true
-    ])
+      // ✅ Keep Playwright HTML + artifacts
+      archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
+      archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
+
+      publishHTML(target: [
+        reportDir: 'playwright-report',
+        reportFiles: 'index.html',
+        reportName: 'Playwright HTML Report',
+        alwaysLinkToLastBuild: true,
+        keepAll: true
+      ])
+    }
+
+    success {
+      echo '🎉 Tests passed!'
+    }
+
+    failure {
+      echo '❌ Tests failed. Check logs and report.'
+    }
   }
-
-  success {
-    echo '🎉 Tests passed!'
-  }
-
-  failure {
-    echo '❌ Tests failed. Check logs and report.'
-  }
-}
 }

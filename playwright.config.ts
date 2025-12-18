@@ -10,6 +10,7 @@ export default defineConfig({
     ['html'],
     ['list'],
     ['json', { outputFile: 'test-results/results.json' }],
+    ['junit', { outputFile: 'test-results/junit-results.xml' }],
   ],
   use: {
     baseURL: 'https://the-internet.herokuapp.com/',
