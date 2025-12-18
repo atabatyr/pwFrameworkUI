@@ -10,10 +10,7 @@ pipeline {
   }
 
   triggers {
-    // 🟢 Trigger build on every push to 'main'
-    pollSCM('* * * * *') // Polls Git every minute (optional)
-    // OR, for GitHub webhook:
-    // githubPush()
+    githubPush() // or pollSCM('* * * * *')
   }
 
   stages {
@@ -37,6 +34,22 @@ pipeline {
       }
     }
 
+    // ✅ Restore trend history
+    stage('Restore Allure History') {
+      steps {
+        script {
+          def prevHistory = "${env.WORKSPACE}/allure-report/history"
+          def resultsHistory = "${env.WORKSPACE}/allure-results/history"
+          if (fileExists(prevHistory)) {
+            sh "mkdir -p ${resultsHistory} && cp -R ${prevHistory}/* ${resultsHistory}/"
+            echo "✅ Restored Allure history from previous build."
+          } else {
+            echo "⚠️ No previous Allure history found."
+          }
+        }
+      }
+    }
+
     stage('Generate Allure Report') {
       steps {
         sh 'npm run allure:generate'
@@ -46,22 +59,13 @@ pipeline {
 
   post {
     always {
-      // 🕘 Copy previous Allure history to results (for trend graphs)
-      script {
-        def reportHistory = "${env.WORKSPACE}/allure-report/history"
-        def resultsHistory = "${env.WORKSPACE}/allure-results/history"
-        if (fileExists(reportHistory)) {
-          sh "mkdir -p ${resultsHistory} && cp -R ${reportHistory}/* ${resultsHistory}/"
-        }
-      }
-
       // 📊 Publish Allure report
       allure([
         reportBuildPolicy: 'ALWAYS',
         results: [[path: 'allure-results']]
       ])
 
-      // 🗂️ Archive history folder (optional)
+      // 🗂️ Archive report history for the next run
       archiveArtifacts artifacts: 'allure-report/history/**', allowEmptyArchive: true
     }
   }
