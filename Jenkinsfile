@@ -15,7 +15,7 @@ pipeline {
         sh 'node -v'
         sh 'npm -v'
         sh 'npm ci'
-        sh 'npx playwright install'
+        sh 'npx playwright install chromium'
       }
     }
 
