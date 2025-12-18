@@ -11,3 +11,5 @@ playwright-report/
 *.swo
 *~
 .idea/
+allure-report/
+allure-results/

@@ -11,6 +11,7 @@ export default defineConfig({
     ['list'],
     ['json', { outputFile: 'test-results/results.json' }],
     ['junit', { outputFile: 'test-results/junit-results.xml' }],
+    ['allure-playwright'],
   ],
   use: {
     baseURL: 'https://the-internet.herokuapp.com/',
