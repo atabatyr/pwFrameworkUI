@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "npx playwright test --grep @regression --project=chromium",
+    "test": "npx playwright test --grep @regression",
     "test:debug": "npx playwright test --debug",
     "test:ui": "npx playwright test --ui",
     "test:chromium": "npx playwright test --project=chromium --grep @regression",
