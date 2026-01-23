@@ -1,32 +1,35 @@
-import { Page, Locator } from '@playwright/test';
+import { Locator, Page, FrameLocator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 export class WYSIWYGEditorPage extends BasePage {
-  readonly editorFrame: Locator;
-  readonly editorContent: Locator;
+  readonly frame: FrameLocator;
+  readonly editorBody: Locator;
 
   constructor(page: Page) {
     super(page);
-    this.editorFrame = page.frameLocator('iframe');
-    this.editorContent = this.editorFrame.locator('[contenteditable="true"]');
+    this.frame = page.frameLocator('#mce_0_ifr');
+    this.editorBody = this.frame.locator('body#tinymce');
   }
 
   async navigateToWYSIWYGEditor() {
     await this.goto('/tinymce');
+    await this.editorBody.waitFor({ state: 'visible' });
   }
 
   async clearEditor() {
-    await this.editorContent.click();
-    await this.page.keyboard.press('Control+A');
-    await this.page.keyboard.press('Delete');
+    await this.editorBody.evaluate((el) => (el.innerHTML = ''));
   }
 
   async typeInEditor(text: string) {
-    await this.editorContent.click();
-    await this.editorContent.type(text);
+    await this.editorBody.click();
+    await this.editorBody.type(text);
   }
 
   async getEditorContent(): Promise<string> {
-    return await this.editorContent.textContent() || '';
+    return await this.editorBody.textContent() || '';
+  }
+
+  async expectToBeOnEditorPage() {
+    await expect(this.page).toHaveURL(/\/tinymce/);
   }
 }

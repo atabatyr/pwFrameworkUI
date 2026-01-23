@@ -1,37 +1,25 @@
 import { test, expect } from '../src/fixtures/pageFixtures';
 
-test.describe('Hovers Tests', () => {
+test.describe('Hovers Page Tests @hovers @hello1', () => {
+
   test.beforeEach(async ({ hoversPage }) => {
-    await hoversPage.navigateToHovers();
+    await hoversPage.navigate();
+    await hoversPage.waitForPageLoaded();
   });
 
-  test('@regressionshould display figures on hovers page', async ({ hoversPage }) => {
-    await test.step('Verify figures are present', async () => {
-      const count = await hoversPage.getNumberOfFigures();
-      expect(count).toBeGreaterThan(0);
-    });
-  });
+  for (const [index, username] of ['user1', 'user2', 'user3'].entries()) {
+    test(`@regression hover on avatar ${index + 1} shows correct caption`, async ({ hoversPage }) => {
+      await test.step(`Hover over avatar ${index + 1}`, async () => {
+        await hoversPage.hoverOverAvatar(index);
+      });
 
-  test('@regressionshould display caption on hover', async ({ hoversPage }) => {
-    await test.step('Hover over first figure and verify caption', async () => {
-      await hoversPage.hoverOverFigure(0);
-      const isVisible = await hoversPage.isCaptionVisible();
-      expect(isVisible).toBeTruthy();
-    });
-  });
+      await test.step(`Verify caption for ${username}`, async () => {
+        const text = await hoversPage.getCaptionText(index);
+        expect(text).toContain(`name: ${username}`);
 
-  test('@regression should display correct caption text on hover', async ({ hoversPage }) => {
-    await test.step('Hover over figure and get caption text', async () => {
-      await hoversPage.hoverOverFigure(1);
-      const caption = await hoversPage.getCaptionTextForFigure(1);
-      expect(caption.length).toBeGreaterThan(0);
+        const href = await hoversPage.getProfileLink(index);
+        expect(href).toBe(`/users/${index + 1}`);
+      });
     });
-  });
-
-  test('@regression should have at least 3 figures', async ({ hoversPage }) => {
-    await test.step('Verify minimum figure count', async () => {
-      const count = await hoversPage.getNumberOfFigures();
-      expect(count).toBeGreaterThanOrEqual(3);
-    });
-  });
+  }
 });

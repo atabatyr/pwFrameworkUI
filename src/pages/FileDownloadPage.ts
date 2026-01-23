@@ -1,23 +1,40 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Download, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 export class FileDownloadPage extends BasePage {
-  readonly downloadLinks: Locator;
-
   constructor(page: Page) {
     super(page);
-    this.downloadLinks = page.locator('a[href*="/download"]');
   }
 
-  async navigateToFileDownload() {
+  /**
+   * Navigate to File Downloader page
+   */
+  async navigate() {
     await this.goto('/download');
   }
 
-  async getDownloadLinks() {
-    return await this.downloadLinks.all();
+  /**
+   * Wait until page is ready (header visible)
+   */
+  async waitForPageLoaded() {
+    await this.page
+      .getByRole('heading', { name: 'File Downloader' })
+      .waitFor({ state: 'visible' });
   }
 
-  async getDownloadLinkCount(): Promise<number> {
-    return await this.downloadLinks.count();
+  /**
+   * Download a file by visible link name
+   */
+  async downloadFileByName(fileName: string): Promise<Download> {
+    const fileLink = this.page.getByRole('link', { name: fileName });
+
+    await expect(fileLink).toBeVisible();
+
+    const [download] = await Promise.all([
+      this.page.waitForEvent('download'),
+      fileLink.click(),
+    ]);
+
+    return download;
   }
 }

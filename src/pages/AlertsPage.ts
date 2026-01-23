@@ -1,72 +1,67 @@
-import { Page, Locator } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { Locator, Page } from '@playwright/test';
 
-export class AlertsPage extends BasePage {
-  readonly jsAlertButton: Locator;
-  readonly jsConfirmButton: Locator;
-  readonly jsPromptButton: Locator;
+export class AlertsPage {
+  readonly alertButton: Locator;
+  readonly confirmButton: Locator;
+  readonly promptButton: Locator;
   readonly resultText: Locator;
 
-  constructor(page: Page) {
-    super(page);
-    this.jsAlertButton = page.locator('button', { hasText: 'Click for JS Alert' });
-    this.jsConfirmButton = page.locator('button', { hasText: 'Click for JS Confirm' });
-    this.jsPromptButton = page.locator('button', { hasText: 'Click for JS Prompt' });
+  constructor(private readonly page: Page) {
+    this.alertButton = page.getByRole('button', { name: 'Click for JS Alert' });
+    this.confirmButton = page.getByRole('button', { name: 'Click for JS Confirm' });
+    this.promptButton = page.getByRole('button', { name: 'Click for JS Prompt' });
     this.resultText = page.locator('#result');
   }
 
-  /**
-   * Navigate to alerts page
-   */
-  async navigateToAlerts() {
-    await this.goto('/javascript_alerts');
+  async navigate() {
+    await this.page.goto('https://the-internet.herokuapp.com/javascript_alerts');
   }
 
-  /**
-   * Trigger JS alert
-   */
-  async triggerAlert() {
-    this.page.once('dialog', dialog => {
-      dialog.accept();
+  async waitForPageLoaded() {
+    await this.alertButton.waitFor({ state: 'visible' });
+  }
+
+  async triggerAlertAndAccept() {
+    this.page.once('dialog', async (dialog) => {
+      await dialog.accept();
     });
-    await this.jsAlertButton.click();
+
+    await this.alertButton.click();
   }
 
-  /**
-   * Trigger JS confirm and accept
-   */
   async triggerConfirmAndAccept() {
-    this.page.once('dialog', dialog => {
-      dialog.accept();
+    this.page.once('dialog', async (dialog) => {
+      await dialog.accept();
     });
-    await this.jsConfirmButton.click();
+
+    await this.confirmButton.click();
   }
 
-  /**
-   * Trigger JS confirm and dismiss
-   */
   async triggerConfirmAndDismiss() {
-    this.page.once('dialog', dialog => {
-      dialog.dismiss();
+    this.page.once('dialog', async (dialog) => {
+      await dialog.dismiss();
     });
-    await this.jsConfirmButton.click();
+
+    await this.confirmButton.click();
   }
 
-  /**
-   * Trigger JS prompt with text
-   */
-  async triggerPromptWithText(text: string) {
-    this.page.once('dialog', dialog => {
-      dialog.accept(text);
+  async triggerPromptAndType(text: string) {
+    this.page.once('dialog', async (dialog) => {
+      await dialog.accept(text);
     });
-    await this.jsPromptButton.click();
+
+    await this.promptButton.click();
   }
 
-  /**
-   * Get result message
-   */
-  async getResultMessage(): Promise<string> {
-    await this.resultText.waitFor({ state: 'visible' });
-    return await this.resultText.textContent() || '';
+  async triggerPromptAndDismiss() {
+    this.page.once('dialog', async (dialog) => {
+      await dialog.dismiss();
+    });
+
+    await this.promptButton.click();
+  }
+
+  async getResultText(): Promise<string> {
+    return (await this.resultText.textContent()) ?? '';
   }
 }

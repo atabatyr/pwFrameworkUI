@@ -11,6 +11,7 @@ import { HoversPage } from '../pages/HoversPage';
 import { TablePage } from '../pages/TablePage';
 import { BrokenImagesPage } from '../pages/BrokenImagesPage';
 import { FileUploadPage } from '../pages/FileUploadPage';
+import { FileUploadResultPage } from '../pages/FileUploadResultPage';
 import { AddRemoveElementsPage } from '../pages/AddRemoveElementsPage';
 import { DynamicContentPage } from '../pages/DynamicContentPage';
 import { InputsPage } from '../pages/InputsPage';
@@ -58,6 +59,7 @@ type TestFixtures = {
   tablePage: TablePage;
   brokenImagesPage: BrokenImagesPage;
   fileUploadPage: FileUploadPage;
+  fileUploadResultPage: FileUploadResultPage;
   addRemoveElementsPage: AddRemoveElementsPage;
   dynamicContentPage: DynamicContentPage;
   inputsPage: InputsPage;
@@ -152,6 +154,11 @@ export const test = base.extend<TestFixtures>({
   fileUploadPage: async ({ page }, use) => {
     const fileUploadPage = new FileUploadPage(page);
     await use(fileUploadPage);
+  },
+
+  fileUploadResultPage: async ({ page }, use) => {
+    const fileUploadResultPage = new FileUploadResultPage(page);
+    await use(fileUploadResultPage);
   },
 
   addRemoveElementsPage: async ({ page }, use) => {
@@ -337,6 +344,7 @@ export async function createPageFixtures(page: Page) {
     tablePage: new TablePage(page),
     brokenImagesPage: new BrokenImagesPage(page),
     fileUploadPage: new FileUploadPage(page),
+    fileUploadResultPage: new FileUploadResultPage(page),
     addRemoveElementsPage: new AddRemoveElementsPage(page),
     dynamicContentPage: new DynamicContentPage(page),
     inputsPage: new InputsPage(page),

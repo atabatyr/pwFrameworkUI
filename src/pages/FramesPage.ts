@@ -1,41 +1,27 @@
 import { Page, Locator } from '@playwright/test';
-import { BasePage } from './BasePage';
 
-export class FramesPage extends BasePage {
-  readonly iframe: Locator;
-  readonly frameContent: Locator;
+export class FramesPage {
+  readonly nestedFramesLink: Locator;
+  readonly iFrameLink: Locator;
 
-  constructor(page: Page) {
-    super(page);
-    this.iframe = page.locator('iframe');
-    this.frameContent = page.locator('body');
+  constructor(private readonly page: Page) {
+    this.nestedFramesLink = page.getByRole('link', { name: 'Nested Frames' });
+    this.iFrameLink = page.getByRole('link', { name: 'iFrame' });
   }
 
-  /**
-   * Navigate to frames page
-   */
-  async navigateToFrames() {
-    await this.goto('/iframe');
+  async navigate() {
+    await this.page.goto('https://the-internet.herokuapp.com/frames');
   }
 
-  /**
-   * Get iframe count
-   */
-  async getIframeCount(): Promise<number> {
-    const iframes = await this.iframe.all();
-    return iframes.length;
+  async clickNestedFrames() {
+    await this.nestedFramesLink.click();
   }
 
-  /**
-   * Get frame titles
-   */
-  async getFrameTitles(): Promise<string[]> {
-    const iframes = await this.iframe.all();
-    const titles = [];
-    for (const iframe of iframes) {
-      const title = await iframe.getAttribute('src');
-      if (title) titles.push(title);
-    }
-    return titles;
+  async clickIFrame() {
+    await this.iFrameLink.click();
+  }
+
+  async waitForPageLoaded() {
+    await this.nestedFramesLink.waitFor({ state: 'visible' });
   }
 }

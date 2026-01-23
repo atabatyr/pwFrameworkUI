@@ -1,65 +1,35 @@
-import { Page, Locator } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { Page, Locator, expect } from '@playwright/test';
 
-export class LoginPage extends BasePage {
+export class LoginPage {
+  readonly page: Page;
   readonly usernameInput: Locator;
   readonly passwordInput: Locator;
   readonly loginButton: Locator;
-  readonly successMessage: Locator;
-  readonly errorMessage: Locator;
+  readonly flashMessage: Locator;
 
   constructor(page: Page) {
-    super(page);
-    this.usernameInput = page.locator('input[id="username"]');
-    this.passwordInput = page.locator('input[id="password"]');
-    this.loginButton = page.locator('button[type="submit"]');
-    this.successMessage = page.locator('.subheader');
-    this.errorMessage = page.locator('#flash');
+    this.page = page;
+    this.usernameInput = page.getByLabel('Username');
+    this.passwordInput = page.getByLabel('Password');
+    this.loginButton = page.getByRole('button', { name: /login/i });
+    this.flashMessage = page.locator('#flash');
   }
 
-  /**
-   * Navigate to login page
-   */
-  async navigateToLogin() {
-    await this.goto('/login');
+  async navigate() {
+    await this.page.goto('https://the-internet.herokuapp.com/login');
   }
 
-  /**
-   * Verify login page is loaded
-   */
-  async verifyLoginPageLoaded() {
-    await this.usernameInput.waitFor({ state: 'visible' });
-  }
-
-  /**
-   * Perform login
-   */
   async login(username: string, password: string) {
     await this.usernameInput.fill(username);
     await this.passwordInput.fill(password);
     await this.loginButton.click();
   }
 
-  /**
-   * Verify login success
-   */
-  async verifyLoginSuccess(): Promise<string> {
-    await this.successMessage.waitFor({ state: 'visible' });
-    return await this.successMessage.textContent() || '';
+  async getFlashMessage(): Promise<string> {
+    return (await this.flashMessage.textContent()) ?? '';
   }
 
-  /**
-   * Verify login error
-   */
-  async verifyLoginError(): Promise<string> {
-    await this.errorMessage.waitFor({ state: 'visible' });
-    return await this.errorMessage.textContent() || '';
-  }
-
-  /**
-   * Check if error message is visible
-   */
-  async isErrorDisplayed(): Promise<boolean> {
-    return await this.errorMessage.isVisible();
+  async assertFlashContains(text: string) {
+    await expect(this.flashMessage).toContainText(text);
   }
 }

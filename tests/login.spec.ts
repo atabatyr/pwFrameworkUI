@@ -1,61 +1,27 @@
 import { test, expect } from '../src/fixtures/pageFixtures';
 
-test.describe('Login Page Tests', () => {
+test.describe('Login Tests @login @hello1', () => {
   test.beforeEach(async ({ loginPage }) => {
-    await loginPage.navigateToLogin();
+    await loginPage.navigate();
   });
 
-  test('should load login page successfully', async ({ loginPage }) => {
-    await test.step('Verify login page is loaded', async () => {
-      await loginPage.verifyLoginPageLoaded();
-      const title = await loginPage.getPageTitle();
-      expect(title).toContain('The Internet');
-    });
+  test('@smoke should login successfully with valid credentials', async ({ loginPage }) => {
+    await loginPage.login('tomsmith', 'SuperSecretPassword!');
+    await loginPage.assertFlashContains('You logged into a secure area!');
   });
 
-  test('should login with valid credentials', async ({ loginPage }) => {
-    await test.step('Enter valid credentials', async () => {
-      await loginPage.login('tomsmith', 'SuperSecretPassword!');
-    });
-
-    await test.step('Verify login success', async () => {
-      const message = await loginPage.verifyLoginSuccess();
-      expect(message.toLowerCase()).toContain('secure area');
-    });
+  test('should show error for invalid username', async ({ loginPage }) => {
+    await loginPage.login('wronguser', 'SuperSecretPassword!');
+    await loginPage.assertFlashContains('Your username is invalid!');
   });
 
-  test('should display error message with invalid credentials', async ({ loginPage }) => {
-    await test.step('Enter invalid credentials', async () => {
-      await loginPage.login('invaliduser', 'wrongpassword');
-    });
-
-    await test.step('Verify error message is displayed', async () => {
-      const isError = await loginPage.isErrorDisplayed();
-      expect(isError).toBeTruthy();
-      const errorText = await loginPage.verifyLoginError();
-      expect(errorText.toLowerCase()).toContain('invalid');
-    });
+  test('should show error for invalid password', async ({ loginPage }) => {
+    await loginPage.login('tomsmith', 'wrongpassword');
+    await loginPage.assertFlashContains('Your password is invalid!');
   });
 
-  test('should display error with invalid username only', async ({ loginPage }) => {
-    await test.step('Enter invalid username', async () => {
-      await loginPage.login('wronguser', 'SuperSecretPassword!');
-    });
-
-    await test.step('Verify error message', async () => {
-      const isError = await loginPage.isErrorDisplayed();
-      expect(isError).toBeTruthy();
-    });
-  });
-
-  test('should display error with invalid password only', async ({ loginPage }) => {
-    await test.step('Enter valid username but invalid password', async () => {
-      await loginPage.login('tomsmith', 'WrongPassword');
-    });
-
-    await test.step('Verify error message', async () => {
-      const isError = await loginPage.isErrorDisplayed();
-      expect(isError).toBeTruthy();
-    });
+  test('should show error when fields are empty', async ({ loginPage }) => {
+    await loginPage.login('', '');
+    await loginPage.assertFlashContains('Your username is invalid!');
   });
 });

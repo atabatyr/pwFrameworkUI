@@ -2,44 +2,57 @@ import { Page, Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 export class DynamicContentPage extends BasePage {
-  readonly contentArea: Locator;
-  readonly content: Locator;
+  readonly header: Locator;
+  readonly textBlocks: Locator;
+  readonly images: Locator;
 
   constructor(page: Page) {
     super(page);
-    this.contentArea = page.locator('#content');
-    this.content = page.locator('#content p');
+    this.header = page.getByRole('heading', { name: 'Dynamic Content' });
+    this.textBlocks = page.locator('#content .row .large-10.columns');
+    this.images = page.locator('.large-2.columns img');
   }
 
   /**
-   * Navigate to dynamic content page
+   * Navigate to dynamic content page (dynamic)
    */
-  async navigateToDynamicContent() {
-    await this.goto('/dynamic_content?with_content=');
+  async navigate() {
+    await this.goto('/dynamic_content');
   }
 
   /**
-   * Get content text
+   * Navigate to static content version
    */
-  async getContentText(): Promise<string> {
-    try {
-      await this.content.first().waitFor({ state: 'visible', timeout: 5000 });
-      return await this.content.first().textContent() || '';
-    } catch {
-      return '';
+  async navigateWithStaticContent() {
+    await this.goto('/dynamic_content?with_content=static');
+  }
+
+  /**
+   * Wait until page is loaded
+   */
+  async waitForPageLoaded() {
+    await this.header.waitFor({ state: 'visible' });
+  }
+
+  /**
+   * Get all dynamic text blocks
+   */
+  async getAllTextContents(): Promise<string[]> {
+    const texts: string[] = [];
+    const count = await this.textBlocks.count();
+
+    for (let i = 0; i < count; i++) {
+      texts.push((await this.textBlocks.nth(i).innerText()).trim());
     }
+
+    return texts;
   }
 
   /**
-   * Reload page and check if content changes
+   * Reload page
    */
-  async reloadAndGetNewContent(): Promise<string> {
+  async reloadPage() {
     await this.page.reload();
-    try {
-      await this.content.first().waitFor({ state: 'visible', timeout: 5000 });
-      return await this.content.first().textContent() || '';
-    } catch {
-      return '';
-    }
+    await this.waitForPageLoaded();
   }
 }

@@ -2,43 +2,24 @@ import { Page, Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 export class StatusCodesPage extends BasePage {
-  readonly statusLinks: Locator;
-  readonly pageContent: Locator;
+  readonly statusLink: (code: number) => Locator;
+  readonly message: Locator;
 
   constructor(page: Page) {
     super(page);
-    this.statusLinks = page.locator('a');
-    this.pageContent = page.locator('body');
+    this.statusLink = (code: number) => page.locator(`a[href="status_codes/${code}"]`);
+    this.message = page.locator('#content p');
   }
 
-  /**
-   * Navigate to status codes page
-   */
   async navigateToStatusCodes() {
     await this.goto('/status_codes');
   }
 
-  /**
-   * Click on a status code link
-   */
-  async clickStatusCodeLink(text: string) {
-    const link = this.page.locator(`a:has-text("${text}")`);
-    await link.click();
+  async clickStatusCode(code: number) {
+    await this.statusLink(code).click();
   }
 
-  /**
-   * Get page content
-   */
-  async getPageContent(): Promise<string> {
-    return await this.pageContent.textContent() || '';
-  }
-
-  /**
-   * Check status code page
-   */
-  async checkStatusCode(code: string): Promise<boolean> {
-    await this.clickStatusCodeLink(code);
-    const content = await this.getPageContent();
-    return content.includes(code);
+  async getStatusMessage(): Promise<string> {
+    return await this.message.textContent() || '';
   }
 }

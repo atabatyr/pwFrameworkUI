@@ -6,36 +6,37 @@ export class MultipleWindowsPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.newWindowLink = page.locator('a', { hasText: 'Click Here' });
+    this.newWindowLink = page.getByRole('link', { name: 'Click Here' });
   }
 
   /**
-   * Navigate to multiple windows page
+   * Navigate to the multiple windows page
    */
-  async navigateToMultipleWindows() {
+  async navigateToMultipleWindows(): Promise<void> {
     await this.goto('/windows');
   }
 
   /**
-   * Open new window
+   * Clicks the link and waits for a new window (tab) to open
    */
-  async openNewWindow() {
-    const [popup] = await Promise.all([
+  async openNewWindow(): Promise<Page> {
+    const [newPage] = await Promise.all([
       this.page.context().waitForEvent('page'),
-      this.newWindowLink.click()
+      this.newWindowLink.click(),
     ]);
-    return popup;
+    await newPage.waitForLoadState();
+    return newPage;
   }
 
   /**
-   * Verify current window title
+   * Returns the title of the current window
    */
   async getCurrentWindowTitle(): Promise<string> {
     return await this.page.title();
   }
 
   /**
-   * Get current window URL
+   * Returns the URL of the current window
    */
   async getCurrentWindowURL(): Promise<string> {
     return this.page.url();

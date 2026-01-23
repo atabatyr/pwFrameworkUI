@@ -1,37 +1,67 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 export class DynamicControlsPage extends BasePage {
-  readonly addButton: Locator;
+  readonly header: Locator;
+
+  // Remove/Add
   readonly removeButton: Locator;
   readonly checkbox: Locator;
+  readonly message: Locator;
+
+  // Enable/Disable
   readonly input: Locator;
+  readonly enableButton: Locator;
 
   constructor(page: Page) {
     super(page);
-    this.addButton = page.locator('button:has-text("Add")');
-    this.removeButton = page.locator('button:has-text("Remove")');
-    this.checkbox = page.locator('input[type="checkbox"]');
-    this.input = page.locator('input[type="text"]');
+    this.header = page.getByRole('heading', { name: 'Dynamic Controls' });
+
+    this.removeButton = page.locator('#checkbox-example button');
+    this.checkbox = page.locator('#checkbox');
+    this.message = page.locator('#message');
+
+    this.input = page.locator('#input-example input');
+    this.enableButton = page.locator('#input-example button');
   }
 
-  async navigateToDynamicControls() {
+  async navigate() {
     await this.goto('/dynamic_controls');
   }
 
-  async clickAddButton() {
-    await this.addButton.click();
+  async waitForPageLoaded() {
+    await this.header.waitFor({ state: 'visible' });
   }
 
-  async clickRemoveButton() {
+  /* ---------- Remove / Add ---------- */
+
+  async removeCheckbox() {
     await this.removeButton.click();
+    await expect(this.message).toHaveText("It's gone!");
+  }
+
+  async addCheckbox() {
+    await this.removeButton.click();
+    await expect(this.message).toHaveText("It's back!");
   }
 
   async isCheckboxVisible(): Promise<boolean> {
     return await this.checkbox.isVisible();
   }
 
-  async isInputVisible(): Promise<boolean> {
-    return await this.input.isVisible();
+  /* ---------- Enable / Disable ---------- */
+
+  async enableInput() {
+    await this.enableButton.click();
+    await expect(this.message).toHaveText("It's enabled!");
+  }
+
+  async disableInput() {
+    await this.enableButton.click();
+    await expect(this.message).toHaveText("It's disabled!");
+  }
+
+  async isInputEnabled(): Promise<boolean> {
+    return await this.input.isEnabled();
   }
 }
