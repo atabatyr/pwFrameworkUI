@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
 
 /**
  * Common helper functions for tests
@@ -69,5 +69,12 @@ export class TestHelper {
    */
   static async waitForNetworkIdle(page: Page, timeout: number = 5000) {
     await page.waitForLoadState('networkidle', { timeout });
+  }
+  static async waitForElementState(
+    locator: Locator,
+    state: 'visible' | 'hidden' | 'attached' | 'detached' = 'visible',
+    timeout: number = 5000
+  ) {
+    await locator.waitFor({ state, timeout });
   }
 }

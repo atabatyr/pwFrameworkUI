@@ -1,10 +1,15 @@
 import { test, expect } from '../src/fixtures/pageFixtures';
+import { TestHelper } from '../src/utils/testHelper';
 
 test.describe('Drag and Drop Tests @hello1', () => {
 
   test.beforeEach(async ({ dragDropPage }) => {
     await dragDropPage.navigateToDragDrop();
     await dragDropPage.waitForPageLoaded(); // ✅ explicit waitFor usage
+  });
+
+  test("waitForElementState usage example", async ({ dragDropPage }) => {
+    await TestHelper.waitForElementState(dragDropPage.columnA, 'visible');
   });
 
   test('should perform drag and drop from A to B', async ({ dragDropPage }) => {

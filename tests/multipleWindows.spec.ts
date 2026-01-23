@@ -1,7 +1,7 @@
 import { test, expect } from '../src/fixtures/pageFixtures';
 
 test.describe('Multiple Windows Tests @windows @hello1', () => {
-  test.beforeEach(async ({ multipleWindowsPage }) => {
+  test.beforeEach(async ({ page, multipleWindowsPage }) => {
     await multipleWindowsPage.navigateToMultipleWindows();
   });
 
