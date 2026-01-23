@@ -7,7 +7,7 @@
     "test:debug": "npx playwright test --debug",
     "test:ui": "npx playwright test --ui",
     "test:chromium": "npx playwright test --project=chromium --grep @hello1",
-    "test:chromium-report": "npx playwright test --project=chromium --grep @hello1&& npx playwright show-report",
+    "test:chromium-report": "npx playwright test --project=chromium --grep @hello12 && npx playwright show-report",
     "test:firefox": "npx playwright test --project=firefox --grep @regression",
     "test:firefox-report": "npx playwright test --project=chromium && npx playwright show-report",
     "test:webkit": "npx playwright test --project=webkit --grep @regression",
@@ -29,5 +29,8 @@
     "allure-playwright": "^3.4.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
   }
 }

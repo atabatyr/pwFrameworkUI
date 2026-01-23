@@ -1,24 +1,22 @@
-import { Page, Locator } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { Page, Frame } from '@playwright/test';
 
-export class NestedFramesPage extends BasePage {
-  readonly iframes: Locator;
-
-  constructor(page: Page) {
-    super(page);
-    this.iframes = page.locator('iframe');
-  }
+export class NestedFramesPage {
+  constructor(public readonly page: Page) { }
 
   async navigateToNestedFrames() {
-    await this.goto('/nested_frames');
+    await this.page.goto('https://the-internet.herokuapp.com/nested_frames');
   }
 
-  async getIframeCount(): Promise<number> {
-    return this.page.frames().length - 1; // Subtract 1 for the main frame
+  getCurrentUrl(): string {
+    return this.page.url();
   }
 
-  async getTopFrameText(): Promise<string> {
-    const frame = this.page.frameLocator('iframe[name="frame-top"]');
-    return await frame.locator('body').textContent() || '';
+  async getAllFrames(): Promise<Frame[]> {
+    return this.page.frames(); // includes main frame + all nested frames
+  }
+
+  async getFrameCount(): Promise<number> {
+    const frames = await this.getAllFrames();
+    return frames.length;
   }
 }

@@ -1,66 +1,45 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 export class DynamicLoadingPage extends BasePage {
-  readonly example1Link: Locator;
-  readonly example2Link: Locator;
+  readonly header: Locator;
   readonly startButton: Locator;
-  readonly loadingIndicator: Locator;
-  readonly result: Locator;
+  readonly loading: Locator;
+  readonly finishText: Locator;
 
   constructor(page: Page) {
     super(page);
-    this.example1Link = page.locator('a[href="/dynamic_loading/1"]');
-    this.example2Link = page.locator('a[href="/dynamic_loading/2"]');
-    this.startButton = page.locator('button', { hasText: 'Start' });
-    this.loadingIndicator = page.locator('#loading');
-    this.result = page.locator('#result');
+    this.header = page.getByRole('heading', { name: 'Dynamically Loaded Page Elements' });
+    this.startButton = page.getByRole('button', { name: 'Start' });
+    this.loading = page.locator('#loading');
+    this.finishText = page.locator('#finish h4');
   }
 
-  /**
-   * Navigate to dynamic loading page
-   */
-  async navigateToDynamicLoading() {
-    await this.goto('/dynamic_loading');
-  }
-
-  /**
-   * Navigate to example 1
-   */
   async navigateToExample1() {
     await this.goto('/dynamic_loading/1');
   }
 
-  /**
-   * Navigate to example 2
-   */
   async navigateToExample2() {
     await this.goto('/dynamic_loading/2');
   }
 
-  /**
-   * Click start button
-   */
-  async clickStart() {
+  async waitForPageLoaded() {
+    await this.header.waitFor({ state: 'visible' });
+  }
+
+  async startLoading() {
     await this.startButton.click();
   }
 
-  /**
-   * Wait for loading to complete
-   */
-  async waitForLoadingComplete() {
-    try {
-      await this.loadingIndicator.waitFor({ state: 'hidden', timeout: 30000 });
-    } catch {
-      // Loading indicator might not be present, continue
-    }
-    await this.result.waitFor({ state: 'visible', timeout: 30000 });
+  async waitForLoadingToFinish() {
+    await this.loading.waitFor({ state: 'hidden' });
   }
 
-  /**
-   * Get result text
-   */
+  async waitForHelloWorld() {
+    await expect(this.finishText).toHaveText('Hello World!');
+  }
+
   async getResultText(): Promise<string> {
-    return await this.result.textContent() || '';
+    return (await this.finishText.textContent())?.trim() ?? '';
   }
 }

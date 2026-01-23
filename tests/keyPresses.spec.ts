@@ -1,39 +1,35 @@
 import { test, expect } from '../src/fixtures/pageFixtures';
 
-test.describe('Key Presses Tests', () => {
+test.describe('Key Presses Tests @key @hello1', () => {
   test.beforeEach(async ({ keyPressesPage }) => {
     await keyPressesPage.navigateToKeyPresses();
   });
 
-  test('should detect key press', async ({ keyPressesPage }) => {
-    await test.step('Press a key and verify result', async () => {
-      await keyPressesPage.pressKey('a');
-      const result = await keyPressesPage.getResultMessage();
-      expect(result).toContain('You entered: A');
-    });
-  });
+  const keys = [
+    { key: 'a', expected: 'A' },
+    { key: 'z', expected: 'Z' },
+    { key: '1', expected: '1' },
+    { key: '9', expected: '9' },
+    { key: 'Enter', expected: 'ENTER' },
+    { key: 'Escape', expected: 'ESCAPE' },
+    { key: 'Tab', expected: 'TAB' },
+    { key: ' ', expected: 'SPACE' },
+    { key: 'Shift', expected: 'SHIFT' },
+    { key: 'Control', expected: 'CONTROL' },
+    { key: 'Alt', expected: 'ALT' },
+    { key: 'ArrowUp', expected: 'UP' },
+    { key: 'ArrowDown', expected: 'DOWN' },
+    { key: 'F1', expected: 'F1' },
+    { key: 'F12', expected: 'F12' }
+  ];
 
-  test('should detect Enter key press', async ({ keyPressesPage }) => {
-    await test.step('Press Enter and verify result', async () => {
-      await keyPressesPage.pressKey('Enter');
-      const result = await keyPressesPage.getResultMessage();
-      expect(result.toUpperCase()).toContain('ENTER');
+  for (const { key, expected } of keys) {
+    test(`should detect key press: ${expected}`, async ({ keyPressesPage }) => {
+      await test.step(`Press "${key}" and verify result`, async () => {
+        await keyPressesPage.pressKey(key);
+        const result = await keyPressesPage.getResultMessage();
+        expect(result.toUpperCase()).toContain(expected);
+      });
     });
-  });
-
-  test('should detect space key press', async ({ keyPressesPage }) => {
-    await test.step('Press space and verify result', async () => {
-      await keyPressesPage.pressKey(' ');
-      const result = await keyPressesPage.getResultMessage();
-      expect(result.toUpperCase()).toContain('SPACE');
-    });
-  });
-
-  test('should detect Tab key press', async ({ keyPressesPage }) => {
-    await test.step('Press Tab and verify result', async () => {
-      await keyPressesPage.pressKey('Tab');
-      const result = await keyPressesPage.getResultMessage();
-      expect(result.toUpperCase()).toContain('TAB');
-    });
-  });
+  }
 });

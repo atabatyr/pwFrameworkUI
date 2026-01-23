@@ -1,38 +1,47 @@
 import { test, expect } from '../src/fixtures/pageFixtures';
 
-test.describe('Notification Message Tests', () => {
+test.describe('Notification Message Tests @notification @hello1', () => {
+
   test.beforeEach(async ({ notificationPage }) => {
-    await notificationPage.navigateToNotification();
+    await notificationPage.navigate();
   });
 
-  test('should display notification message', async ({ notificationPage }) => {
-    await test.step('Trigger notification', async () => {
-      await notificationPage.clickNotificationLink();
-    });
+  test('@regression should display notification message on click', async ({ notificationPage }) => {
+    await test.step('Click the message link and verify flash appears', async () => {
+      await notificationPage.clickMessageLink();
+      await notificationPage.waitForFlashVisible();
 
-    await test.step('Verify notification is visible', async () => {
-      const isVisible = await notificationPage.isNotificationVisible();
-      expect(isVisible).toBeTruthy();
-    });
-  });
+      const message = await notificationPage.getFlashMessage();
 
-  test('should get notification message text', async ({ notificationPage }) => {
-    await test.step('Trigger and get message', async () => {
-      await notificationPage.clickNotificationLink();
-      const message = await notificationPage.getNotificationMessage();
-      expect(message.length).toBeGreaterThan(0);
+      // Handle misspelling + close button text
+      expect(message).toMatch(/Action\s+(success|unsucces)/i);
     });
   });
 
-  test('should close notification', async ({ notificationPage }) => {
-    await test.step('Trigger notification', async () => {
-      await notificationPage.clickNotificationLink();
-    });
+  test('@regression should display different messages across multiple attempts', async ({ notificationPage }) => {
+    const messages = new Set<string>();
 
-    await test.step('Close and verify', async () => {
-      await notificationPage.closeNotification();
-      const isVisible = await notificationPage.isNotificationVisible();
-      expect(isVisible).toBeFalsy();
-    });
+    for (let i = 0; i < 5; i++) {
+      await notificationPage.clickMessageLink();
+      await notificationPage.waitForFlashVisible();
+      messages.add(await notificationPage.getFlashMessage());
+    }
+
+    expect(messages.size).toBeGreaterThan(1);
+  });
+
+  test('@regression should close notification message text', async ({ notificationPage }) => {
+    await notificationPage.clickMessageLink();
+    await notificationPage.waitForFlashVisible();
+
+    const messageBeforeClose = await notificationPage.getFlashMessage();
+    expect(messageBeforeClose.length).toBeGreaterThan(0);
+
+    await notificationPage.closeFlashMessage();
+
+    const messageAfterClose = await notificationPage.getFlashMessage();
+
+    // Flash container stays visible — only text changes
+    expect(messageAfterClose.length).toBeLessThan(messageBeforeClose.length);
   });
 });

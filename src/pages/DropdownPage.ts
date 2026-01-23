@@ -17,43 +17,53 @@ export class DropdownPage extends BasePage {
   }
 
   /**
-   * Verify page is loaded
+   * Wait until page is ready
    */
-  async verifyPageLoaded() {
+  async waitForPageLoaded() {
     await this.dropdown.waitFor({ state: 'visible' });
   }
 
   /**
    * Select option by value
    */
-  async selectOptionByValue(value: string) {
+  async selectByValue(value: string) {
     await this.dropdown.selectOption(value);
   }
 
   /**
-   * Select option by label
+   * Select option by visible label
    */
-  async selectOptionByLabel(label: string) {
+  async selectByLabel(label: string) {
     await this.dropdown.selectOption({ label });
   }
 
   /**
    * Get selected option value
    */
-  async getSelectedValue(): Promise<string | null> {
+  async getSelectedValue(): Promise<string> {
     return await this.dropdown.inputValue();
   }
 
   /**
-   * Get all available options
+   * Get selected option label
+   */
+  async getSelectedLabel(): Promise<string> {
+    return (await this.dropdown.locator('option:checked').textContent())?.trim() ?? '';
+  }
+
+  /**
+   * Get all available option labels
    */
   async getAvailableOptions(): Promise<string[]> {
-    const options = await this.dropdown.locator('option').all();
-    const labels = [];
-    for (const option of options) {
-      const text = await option.textContent();
+    const options = this.dropdown.locator('option');
+    const count = await options.count();
+    const labels: string[] = [];
+
+    for (let i = 0; i < count; i++) {
+      const text = await options.nth(i).textContent();
       if (text) labels.push(text.trim());
     }
+
     return labels;
   }
 }

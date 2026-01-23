@@ -1,57 +1,31 @@
 import { Page, Locator } from '@playwright/test';
-import { BasePage } from './BasePage';
 
-export class HoversPage extends BasePage {
-  readonly figures: Locator;
-  readonly captionText: Locator;
+export class HoversPage {
+  readonly avatars: Locator;
+  readonly captions: Locator;
 
-  constructor(page: Page) {
-    super(page);
-    this.figures = page.locator('.figure');
-    this.captionText = page.locator('.figcaption');
+  constructor(private readonly page: Page) {
+    this.avatars = page.locator('.figure');
+    this.captions = page.locator('.figcaption');
   }
 
-  /**
-   * Navigate to hovers page
-   */
-  async navigateToHovers() {
-    await this.goto('/hovers');
+  async navigate() {
+    await this.page.goto('https://the-internet.herokuapp.com/hovers');
   }
 
-  /**
-   * Get number of figures
-   */
-  async getNumberOfFigures(): Promise<number> {
-    const figures = await this.figures.all();
-    return figures.length;
+  async waitForPageLoaded() {
+    await this.avatars.first().waitFor({ state: 'visible' });
   }
 
-  /**
-   * Hover over figure by index
-   */
-  async hoverOverFigure(index: number) {
-    const figures = await this.figures.all();
-    if (figures.length > index) {
-      await figures[index].hover();
-    }
+  async hoverOverAvatar(index: number) {
+    await this.avatars.nth(index).hover();
   }
 
-  /**
-   * Check if caption is visible after hover
-   */
-  async isCaptionVisible(): Promise<boolean> {
-    return await this.captionText.first().isVisible();
+  async getCaptionText(index: number): Promise<string> {
+    return this.captions.nth(index).innerText();
   }
 
-  /**
-   * Get caption text for figure by index
-   */
-  async getCaptionTextForFigure(index: number): Promise<string> {
-    const figures = await this.figures.all();
-    if (figures.length > index) {
-      const caption = figures[index].locator('.figcaption');
-      return await caption.textContent() || '';
-    }
-    return '';
+  async getProfileLink(index: number): Promise<string | null> {
+    return this.captions.nth(index).locator('a').getAttribute('href');
   }
 }

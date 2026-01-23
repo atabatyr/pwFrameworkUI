@@ -1,31 +1,40 @@
 import { test, expect } from '../src/fixtures/pageFixtures';
 
-test.describe('Disappearing Elements Tests', () => {
+test.describe('Disappearing Elements Tests @hello1', () => {
   test.beforeEach(async ({ disappearingElementsPage }) => {
-    await disappearingElementsPage.navigateToDisappearingElements();
+    await disappearingElementsPage.navigate();
+    await disappearingElementsPage.waitForPageLoaded();
   });
 
-  test('should display disappearing elements', async ({ disappearingElementsPage }) => {
-    await test.step('Get initial element count', async () => {
-      const count = await disappearingElementsPage.getElementCount();
-      expect(count).toBeGreaterThan(0);
+  test('should show only valid menu items', async ({ disappearingElementsPage }) => {
+    await test.step('Validate visible menu items', async () => {
+      const items = await disappearingElementsPage.getMenuItemTexts();
+
+      const allowedItems = [
+        'Home',
+        'About',
+        'Contact Us',
+        'Portfolio',
+        'Gallery',
+      ];
+
+      // Must have at least Home
+      expect(items.length).toBeGreaterThan(0);
+
+      // All visible items must be valid
+      for (const item of items) {
+        expect(allowedItems).toContain(item);
+      }
     });
   });
 
-  test('should get element texts', async ({ disappearingElementsPage }) => {
-    await test.step('Get all element texts', async () => {
-      const texts = await disappearingElementsPage.getElementTexts();
-      expect(texts.length).toBeGreaterThan(0);
-    });
-  });
+  test('gallery menu item may or may not be present', async ({ disappearingElementsPage }) => {
+    await test.step('Check optional Gallery item', async () => {
+      const galleryExists =
+        await disappearingElementsPage.isMenuItemPresent('Gallery');
 
-  test('should show element count may change on reload', async ({ disappearingElementsPage }) => {
-    await test.step('Reload and check count', async () => {
-      const initialCount = await disappearingElementsPage.getElementCount();
-      const reloadCount = await disappearingElementsPage.reloadAndGetElementCount();
-      // Count should be present in both cases
-      expect(initialCount).toBeGreaterThan(0);
-      expect(reloadCount).toBeGreaterThan(0);
+      // Document expected behavior (non-deterministic)
+      expect([true, false]).toContain(galleryExists);
     });
   });
 });

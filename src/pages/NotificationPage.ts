@@ -2,50 +2,51 @@ import { Page, Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 export class NotificationPage extends BasePage {
-  readonly notificationLink: Locator;
-  readonly notification: Locator;
+  readonly messageLink: Locator;
+  readonly flashMessage: Locator;
   readonly closeButton: Locator;
 
   constructor(page: Page) {
     super(page);
-    this.notificationLink = page.locator('a[href*="notification"]');
-    this.notification = page.locator('#flash');
-    this.closeButton = page.locator('#flash .close');
+    this.messageLink = page.getByRole('link', { name: 'Click here' });
+    this.flashMessage = page.locator('#flash');
+    this.closeButton = this.flashMessage.getByRole('button', { name: '×' });
   }
 
   /**
-   * Navigate to notification page
+   * Navigate to the notification message page
    */
-  async navigateToNotification() {
-    await this.goto('/notification_message');
+  async navigate() {
+    await this.goto('/notification_message_rendered');
   }
 
   /**
-   * Click notification link to trigger message
+   * Click the "Click here" link to trigger a new message
    */
-  async clickNotificationLink() {
-    await this.notificationLink.click();
+  async clickMessageLink() {
+    await this.messageLink.click();
   }
 
   /**
-   * Get notification message
+   * Wait for the flash message to be visible
    */
-  async getNotificationMessage(): Promise<string> {
-    await this.notification.waitFor({ state: 'visible' });
-    return await this.notification.textContent() || '';
+  async waitForFlashVisible() {
+    await this.flashMessage.waitFor({ state: 'visible' });
   }
 
   /**
-   * Check if notification is visible
+   * Get the current flash message text (trimmed)
    */
-  async isNotificationVisible(): Promise<boolean> {
-    return await this.notification.isVisible();
+  async getFlashMessage(): Promise<string> {
+    return (await this.flashMessage.textContent())?.trim() || '';
   }
 
   /**
-   * Close notification
+   * Close the flash message (click the × button)
    */
-  async closeNotification() {
-    await this.closeButton.click();
+  async closeFlashMessage() {
+    if (await this.closeButton.isVisible()) {
+      await this.closeButton.click();
+    }
   }
 }

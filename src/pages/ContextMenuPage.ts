@@ -3,10 +3,12 @@ import { BasePage } from './BasePage';
 
 export class ContextMenuPage extends BasePage {
   readonly boxElement: Locator;
+  readonly header: Locator;
 
   constructor(page: Page) {
     super(page);
     this.boxElement = page.locator('#hot-spot');
+    this.header = page.locator('h3');
   }
 
   /**
@@ -20,11 +22,7 @@ export class ContextMenuPage extends BasePage {
    * Right click on element
    */
   async rightClickOnBox() {
-    const [dialog] = await Promise.all([
-      this.page.waitForEvent('dialog'),
-      this.boxElement.click({ button: 'right' })
-    ]);
-    return dialog;
+    await this.boxElement.click({ button: 'right' });
   }
 
   /**
@@ -32,5 +30,9 @@ export class ContextMenuPage extends BasePage {
    */
   async isBoxVisible(): Promise<boolean> {
     return await this.boxElement.isVisible();
+  }
+
+  async waitForPageLoaded() {
+    await this.header.waitFor({ state: 'visible' });
   }
 }

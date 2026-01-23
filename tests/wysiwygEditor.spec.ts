@@ -1,19 +1,33 @@
 import { test, expect } from '../src/fixtures/pageFixtures';
 
-test.describe('WYSIWYG Editor Tests', () => {
-  test('should navigate to wysiwyg editor page', async ({ wysiwygEditorPage }) => {
+test.describe('WYSIWYG Editor Tests @wysiwyg @editor @hello1', () => {
+
+  test('should navigate to WYSIWYG editor page', async ({ wysiwygEditorPage }) => {
     await wysiwygEditorPage.navigateToWYSIWYGEditor();
-    expect(wysiwygEditorPage.page.url()).toContain('/tinymce');
+    await wysiwygEditorPage.expectToBeOnEditorPage();
   });
 
   test('should clear editor content', async ({ wysiwygEditorPage }) => {
     await wysiwygEditorPage.navigateToWYSIWYGEditor();
-    expect(wysiwygEditorPage.page.url()).toContain('/tinymce');
+
+    // Clear editor content
+    await wysiwygEditorPage.clearEditor();
+    const content = await wysiwygEditorPage.getEditorContent();
+    expect(content.trim()).toBe('');
   });
 
-  test('should interact with editor', async ({ wysiwygEditorPage }) => {
+  test('should type and verify text in editor', async ({ wysiwygEditorPage }) => {
     await wysiwygEditorPage.navigateToWYSIWYGEditor();
-    const url = wysiwygEditorPage.page.url();
-    expect(url).toContain('/tinymce');
+
+    const testText = 'Hello, Playwright WYSIWYG!';
+
+    // Clear and type into editor
+    await wysiwygEditorPage.clearEditor();
+    await wysiwygEditorPage.typeInEditor(testText);
+
+    // Verify content
+    const content = await wysiwygEditorPage.getEditorContent();
+    expect(content).toContain(testText);
   });
+
 });

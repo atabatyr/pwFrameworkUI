@@ -1,29 +1,43 @@
 import { test, expect } from '../src/fixtures/pageFixtures';
 
-test.describe('Dynamic Loading Tests', () => {
-  test('should load content from example 1', async ({ dynamicLoadingPage }) => {
-    await test.step('Navigate to example 1', async () => {
-      await dynamicLoadingPage.navigateToExample1();
-    });
+test.describe('Dynamic Loading Tests @hello1', () => {
+
+  test('Example 1 – hidden element becomes visible', async ({ dynamicLoadingPage }) => {
+    await dynamicLoadingPage.navigateToExample1();
+    await dynamicLoadingPage.waitForPageLoaded();
 
     await test.step('Start loading', async () => {
-      await dynamicLoadingPage.clickStart();
-      await dynamicLoadingPage.waitForLoadingComplete();
-      const result = await dynamicLoadingPage.getResultText();
-      expect(result).toContain('Hello World');
+      await dynamicLoadingPage.startLoading();
+    });
+
+    await test.step('Wait for loading to finish', async () => {
+      await dynamicLoadingPage.waitForLoadingToFinish();
+    });
+
+    await test.step('Verify Hello World text', async () => {
+      await dynamicLoadingPage.waitForHelloWorld();
+      const text = await dynamicLoadingPage.getResultText();
+      expect(text).toBe('Hello World!');
     });
   });
 
-  test('should load content from example 2', async ({ dynamicLoadingPage }) => {
-    await test.step('Navigate to example 2', async () => {
-      await dynamicLoadingPage.navigateToExample2();
-    });
+  test('Example 2 – element added to DOM after loading', async ({ dynamicLoadingPage }) => {
+    await dynamicLoadingPage.navigateToExample2();
+    await dynamicLoadingPage.waitForPageLoaded();
 
     await test.step('Start loading', async () => {
-      await dynamicLoadingPage.clickStart();
-      await dynamicLoadingPage.waitForLoadingComplete();
-      const result = await dynamicLoadingPage.getResultText();
-      expect(result).toContain('Hello World');
+      await dynamicLoadingPage.startLoading();
+    });
+
+    await test.step('Wait for loading to finish', async () => {
+      await dynamicLoadingPage.waitForLoadingToFinish();
+    });
+
+    await test.step('Verify Hello World text', async () => {
+      await dynamicLoadingPage.waitForHelloWorld();
+      const text = await dynamicLoadingPage.getResultText();
+      expect(text).toBe('Hello World!');
     });
   });
+
 });

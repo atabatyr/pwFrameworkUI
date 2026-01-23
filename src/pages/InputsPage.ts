@@ -1,51 +1,26 @@
-import { Page, Locator } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { Locator, Page } from '@playwright/test';
 
-export class InputsPage extends BasePage {
+export class InputsPage {
   readonly numberInput: Locator;
-  readonly textInput: Locator;
-  readonly inputs: Locator;
 
-  constructor(page: Page) {
-    super(page);
+  constructor(private readonly page: Page) {
     this.numberInput = page.locator('input[type="number"]');
-    this.textInput = page.locator('input[type="text"]');
-    this.inputs = page.locator('input');
   }
 
-  /**
-   * Navigate to inputs page
-   */
-  async navigateToInputs() {
-    await this.goto('/inputs');
+  async navigate() {
+    await this.page.goto('https://the-internet.herokuapp.com/inputs');
   }
 
-  /**
-   * Enter number value
-   */
-  async enterNumber(value: string) {
-    await this.numberInput.fill(value);
+  async waitForPageLoaded() {
+    await this.numberInput.waitFor({ state: 'visible' });
   }
 
-  /**
-   * Get number value
-   */
-  async getNumberValue(): Promise<string> {
+  async enterNumber(value: number) {
+    await this.numberInput.fill(''); // clear first
+    await this.numberInput.type(value.toString());
+  }
+
+  async getInputValue(): Promise<string> {
     return await this.numberInput.inputValue();
-  }
-
-  /**
-   * Clear number input
-   */
-  async clearNumberInput() {
-    await this.numberInput.clear();
-  }
-
-  /**
-   * Get all input elements
-   */
-  async getInputCount(): Promise<number> {
-    const inputs = await this.inputs.all();
-    return inputs.length;
   }
 }
