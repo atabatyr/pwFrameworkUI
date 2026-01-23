@@ -1,6 +1,6 @@
 import { test, expect } from '../src/fixtures/pageFixtures';
 
-test.describe('Broken Images Tests', () => {
+test.describe('Broken Images Tests @hello1', () => {
   test.beforeEach(async ({ brokenImagesPage }) => {
     await brokenImagesPage.navigateToBrokenImages();
   });
@@ -15,10 +15,10 @@ test.describe('Broken Images Tests', () => {
   test('should have image sources', async ({ brokenImagesPage }) => {
     await test.step('Get and verify image sources', async () => {
       const sources = await brokenImagesPage.getImageSources();
-      expect(sources.length).toBeGreaterThan(0);
-      sources.forEach(src => {
+      expect(sources).not.toHaveLength(0);
+      for (const src of sources) {
         expect(src).toBeTruthy();
-      });
+     }
     });
   });
 
@@ -29,8 +29,8 @@ test.describe('Broken Images Tests', () => {
       // Should have at least one loaded and one broken image
       const hasLoaded = statuses.some(status => status);
       const hasBroken = statuses.some(status => !status);
-      expect(hasLoaded).toBeTruthy();
-      expect(hasBroken).toBeTruthy();
+      expect(hasLoaded).toBe(true);
+      expect(hasBroken).toBe(true);
     });
   });
 });

@@ -27,50 +27,56 @@ export class CheckboxPage extends BasePage {
    * Get checkbox count
    */
   async getCheckboxCount(): Promise<number> {
-    const checkboxes = await this.checkboxes.all();
-    return checkboxes.length;
+    return await this.checkboxes.count();
   }
 
   /**
    * Check a specific checkbox by index
    */
   async checkCheckbox(index: number) {
-    const checkboxes = await this.checkboxes.all();
-    if (checkboxes.length > index) {
-      await checkboxes[index].check();
-    }
+    await this.checkboxes.nth(index).check();
   }
 
   /**
    * Uncheck a specific checkbox by index
    */
   async uncheckCheckbox(index: number) {
-    const checkboxes = await this.checkboxes.all();
-    if (checkboxes.length > index) {
-      await checkboxes[index].uncheck();
-    }
+    await this.checkboxes.nth(index).uncheck();
   }
 
   /**
    * Get checkbox checked status by index
    */
   async isCheckboxChecked(index: number): Promise<boolean> {
-    const checkboxes = await this.checkboxes.all();
-    if (checkboxes.length > index) {
-      return await checkboxes[index].isChecked();
-    }
-    return false;
+    return await this.checkboxes.nth(index).isChecked();
   }
 
   /**
    * Get all checkbox states
    */
   async getAllCheckboxStates(): Promise<boolean[]> {
-    const checkboxes = await this.checkboxes.all();
-    const states = [];
-    for (const checkbox of checkboxes) {
-      states.push(await checkbox.isChecked());
+    const count = await this.checkboxes.count();
+    const states: boolean[] = [];
+
+    for (let i = 0; i < count; i++) {
+      states.push(await this.isCheckboxChecked(i));
     }
+
     return states;
+  }
+
+
+  async checkAllCheckboxes() {
+    const count = await this.checkboxes.count();
+    for (let i = 0; i < count; i++) {
+      await this.checkCheckbox(i);
+    }
+  }
+
+  async unCheckAllCheckboxes() {
+    const count = await this.checkboxes.count();
+    for (let i = 0; i < count; i++) {
+      await this.uncheckCheckbox(i);
+    }
   }
 }

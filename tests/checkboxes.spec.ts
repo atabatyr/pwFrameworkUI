@@ -1,6 +1,6 @@
 import { test, expect } from '../src/fixtures/pageFixtures';
 
-test.describe('Checkbox Tests', () => {
+test.describe('Checkbox Tests @hello1', () => {
   test.beforeEach(async ({ checkboxPage }) => {
     await checkboxPage.navigateToCheckboxes();
   });
@@ -58,30 +58,25 @@ test.describe('Checkbox Tests', () => {
   test('should uncheck and recheck checkboxes', async ({ checkboxPage }) => {
     await test.step('Check all checkboxes', async () => {
       const count = await checkboxPage.getCheckboxCount();
-      for (let i = 0; i < count; i++) {
-        await checkboxPage.checkCheckbox(i);
-      }
+      await checkboxPage.checkAllCheckboxes();
     });
 
     await test.step('Verify all checked', async () => {
       const states = await checkboxPage.getAllCheckboxStates();
-      states.forEach(state => {
-        expect(state).toBeTruthy();
-      });
+      for (const state of states) {
+        expect(state).toBe(true);
+      }
     });
 
     await test.step('Uncheck all checkboxes', async () => {
-      const count = await checkboxPage.getCheckboxCount();
-      for (let i = 0; i < count; i++) {
-        await checkboxPage.uncheckCheckbox(i);
-      }
+      await checkboxPage.unCheckAllCheckboxes();
     });
 
     await test.step('Verify all unchecked', async () => {
       const states = await checkboxPage.getAllCheckboxStates();
-      states.forEach(state => {
-        expect(state).toBeFalsy();
-      });
+      for (const state of states) {
+        expect(state).toBe(false);
+      }
     });
   });
 });

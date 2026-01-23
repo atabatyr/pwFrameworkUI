@@ -20,34 +20,33 @@ export class BrokenImagesPage extends BasePage {
    * Get image count
    */
   async getImageCount(): Promise<number> {
-    const images = await this.images.all();
-    return images.length;
-  }
+  return await this.images.count();
+}
 
   /**
    * Get all image src attributes
    */
   async getImageSources(): Promise<string[]> {
-    const images = await this.images.all();
-    const sources = [];
-    for (const img of images) {
-      const src = await img.getAttribute('src');
-      if (src) sources.push(src);
-    }
-    return sources;
+  const count = await this.images.count();
+  const sources: string[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const src = await this.images.nth(i).getAttribute('src');
+    if (src) sources.push(src);
   }
+
+  return sources;
+}
 
   /**
    * Check if image is loaded by index
    */
   async isImageLoaded(index: number): Promise<boolean> {
-    const images = await this.images.all();
-    if (images.length > index) {
-      // Try to check if image has complete property
-      return await images[index].evaluate((img: HTMLImageElement) => img.complete && img.naturalHeight !== 0);
-    }
-    return false;
-  }
+  return await this.images.nth(index).evaluate(
+    (img: HTMLImageElement) =>
+      img.complete && img.naturalHeight > 0
+  );
+}
 
   /**
    * Get all image loading statuses
