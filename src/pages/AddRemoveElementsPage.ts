@@ -8,8 +8,8 @@ export class AddRemoveElementsPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.addButton = page.locator('button:has-text("Add Element")');
-    this.deleteButtons = page.locator('button:has-text("Delete")');
+    this.addButton = page.getByRole('button', { name: 'Add Element' });
+    this.deleteButtons = page.getByRole('button', { name: 'Delete' });
     this.container = page.locator('#elements');
   }
 
@@ -31,18 +31,14 @@ export class AddRemoveElementsPage extends BasePage {
    * Get delete button count
    */
   async getDeleteButtonCount(): Promise<number> {
-    const buttons = await this.deleteButtons.all();
-    return buttons.length;
+    return await this.deleteButtons.count();
   }
 
   /**
    * Delete element by index
    */
   async deleteElementByIndex(index: number) {
-    const buttons = await this.deleteButtons.all();
-    if (buttons.length > index) {
-      await buttons[index].click();
-    }
+    await this.deleteButtons.nth(index).click();
   }
 
   /**

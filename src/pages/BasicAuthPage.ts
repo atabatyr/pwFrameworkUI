@@ -6,14 +6,14 @@ export class BasicAuthPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.successMessage = page.locator('p');
+    this.successMessage = page.locator('div#content div.example p');
   }
 
   /**
    * Navigate to basic auth page with credentials
    */
   async navigateToBasicAuth(username: string, password: string) {
-    const credentials = Buffer.from(`${username}:${password}`).toString('base64');
+    //const credentials = Buffer.from(`${username}:${password}`).toString('base64');
     const url = `https://${username}:${password}@the-internet.herokuapp.com/basic_auth`;
     await this.page.goto(url);
   }

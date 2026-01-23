@@ -7,18 +7,18 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 2 : 3,
   reporter: [
-    ['html'],
-    ['list'],
-    ['json', { outputFile: 'test-results/results.json' }],
-    ['junit', { outputFile: 'test-results/junit-results.xml' }],
-    ['allure-playwright'],
+    ['html', { outputFolder: 'playwright-report', open: 'always' }],
+    //['list'],
+    //['json', { outputFile: 'test-results/results.json' }],
+    //['junit', { outputFile: 'test-results/junit-results.xml' }],
+    //['allure-playwright'],
   ],
   use: {
     baseURL: 'https://the-internet.herokuapp.com/',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    headless:false,
+    headless: false,
   },
 
   projects: [
@@ -36,5 +36,4 @@ export default defineConfig({
     },
   ],
 
-  webServer: undefined,
 });
